@@ -1,0 +1,71 @@
+# Environment & secrets
+.env
+.env.local
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Flask
+instance/
+.webassets-cache
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# ML models & checkpoints
+*.pkl
+*.pth
+*.h5
+*.onnx
+*.pt
+saved_model/
+checkpoints/
+*.ckpt
+
+# Data (usually too large / shouldn't be versioned)
+data/images/
+data/*.csv
+*.zip
+*.tar.gz
+
+# Logs
+logs/
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# OS files
+Thumbs.db
+desktop.ini
+
+# Antigravity / agentic tool caches (if any get created locally)
+.antigravity/
+.cache/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
