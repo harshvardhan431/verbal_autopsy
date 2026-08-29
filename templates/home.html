@@ -1,0 +1,74 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Verbal Autopsy Lite</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Verbal Autopsy Lite</h1>
+
+        <p class="subtitle">
+            AI-assisted verbal autopsy analysis system
+        </p>
+
+        <div class="options">
+
+            <div class="card">
+
+                <h2>Text Analysis</h2>
+
+                <p>
+                    Describe the patient's symptoms and
+                    receive a predicted cause of death.
+                </p>
+
+                <a href="{{ url_for('text_analysis') }}">
+                    Analyze Text
+                </a>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2>Image Analysis</h2>
+
+                <p>
+                    Upload an image for image-based analysis.
+                </p>
+
+                <a href="{{ url_for('image_analysis') }}">
+                    Analyze Image
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="warning">
+
+            <strong>Disclaimer:</strong>
+
+            This system provides machine-learning predictions
+            for decision support only. It is not a medical diagnosis.
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
+```
