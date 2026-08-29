@@ -19,7 +19,10 @@ if PROJECT_ROOT not in sys.path:
 # ==================================================
 
 from services.question_analyzer import analyze_question
-from services.symptom_extractor import extract_symptoms
+from services.symptom_extractor import (
+    extract_symptoms,
+    extract_age_group
+)
 
 from services.dataset_query import (
     count_condition,
@@ -105,6 +108,12 @@ def handle_prediction(question):
 
     symptoms = extract_symptoms(question)
 
+    age_group = extract_age_group(question)
+    if age_group is None:
+      return "Please provide the patient's age or age group."
+
+    symptoms["age_group"] = age_group
+
 
     # ----------------------------------------------
     # Check whether symptoms were found
@@ -130,9 +139,7 @@ def handle_prediction(question):
 
     # Temporary default.
     # We will build proper age extraction later.
-    symptoms["age_group"] = "adult"
-
-
+    
     # ----------------------------------------------
     # Predict
     # ----------------------------------------------
@@ -247,7 +254,9 @@ if __name__ == "__main__":
 
         "The patient had severe headache and convulsions.",
 
-        "The patient had fever but no cough."
+        "The patient had fever but no cough.",
+
+        "what is the most common disease?"
     ]
 
 

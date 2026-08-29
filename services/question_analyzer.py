@@ -3,128 +3,152 @@ import re
 
 
 # ==================================================
-# DATASET FEATURES
-# ==================================================
-
-SYMPTOM_COLUMNS = [
-    "fever",
-    "cough",
-    "difficulty_breathing",
-    "fast_breathing",
-    "chest_pain",
-    "diarrhea",
-    "blood_in_stool",
-    "vomiting",
-    "blood_in_vomit",
-    "abdominal_pain",
-    "protruding_abdomen",
-    "severe_headache",
-    "stiff_neck",
-    "convulsions",
-    "unconscious",
-    "paralysis",
-    "skin_rash",
-    "yellow_eyes_jaundice",
-    "swollen_legs_feet",
-    "weight_loss",
-    "night_sweats",
-    "road_traffic_accident",
-    "fall_injury",
-    "poisoning",
-    "died_suddenly",
-    "pregnant_at_death",
-    "excessive_bleeding_delivery",
-]
-
-
-# ==================================================
-# WORD → COLUMN MAPPING
+# SYMPTOM ALIASES
 # ==================================================
 
 COLUMN_ALIASES = {
-    "fever": ["fever", "temperature"],
+    "fever": ["fever", "high temperature", "temperature"],
+
     "cough": ["cough", "coughing"],
+
     "difficulty_breathing": [
         "difficulty breathing",
         "breathing difficulty",
         "shortness of breath",
-        "breathlessness",
+        "breathlessness"
     ],
+
     "fast_breathing": [
         "fast breathing",
-        "rapid breathing",
+        "rapid breathing"
     ],
-    "chest_pain": ["chest pain"],
-    "diarrhea": ["diarrhea", "diarrhoea"],
+
+    "chest_pain": [
+        "chest pain",
+        "pain in chest"
+    ],
+
+    "diarrhea": [
+        "diarrhea",
+        "diarrhoea",
+        "loose motion",
+        "loose motions"
+    ],
+
     "blood_in_stool": [
         "blood in stool",
-        "bloody stool",
+        "bloody stool"
     ],
-    "vomiting": ["vomiting", "vomit"],
+
+    "vomiting": [
+        "vomiting",
+        "vomit",
+        "throwing up"
+    ],
+
     "blood_in_vomit": [
         "blood in vomit",
-        "vomiting blood",
+        "vomiting blood"
     ],
+
     "abdominal_pain": [
         "abdominal pain",
         "stomach pain",
-        "belly pain",
+        "belly pain"
     ],
+
     "protruding_abdomen": [
         "protruding abdomen",
         "swollen abdomen",
-        "distended abdomen",
+        "distended abdomen"
     ],
+
     "severe_headache": [
         "severe headache",
-        "bad headache",
+        "bad headache"
     ],
-    "stiff_neck": ["stiff neck"],
+
+    "stiff_neck": [
+        "stiff neck",
+        "neck stiffness"
+    ],
+
     "convulsions": [
         "convulsions",
         "seizure",
-        "seizures",
+        "seizures"
     ],
+
     "unconscious": [
         "unconscious",
-        "lost consciousness",
+        "lost consciousness"
     ],
-    "paralysis": ["paralysis", "paralyzed", "paralysed"],
-    "skin_rash": ["skin rash", "rash"],
+
+    "paralysis": [
+        "paralysis",
+        "paralyzed",
+        "paralysed"
+    ],
+
+    "skin_rash": [
+        "skin rash",
+        "rash"
+    ],
+
     "yellow_eyes_jaundice": [
         "yellow eyes",
-        "jaundice",
+        "jaundice"
     ],
+
     "swollen_legs_feet": [
         "swollen legs",
         "swollen feet",
-        "swollen legs and feet",
+        "swollen legs and feet"
     ],
-    "weight_loss": ["weight loss"],
-    "night_sweats": ["night sweats"],
+
+    "weight_loss": [
+        "weight loss",
+        "lost weight"
+    ],
+
+    "night_sweats": [
+        "night sweats",
+        "sweating at night"
+    ],
+
     "road_traffic_accident": [
         "road traffic accident",
         "traffic accident",
-        "car accident",
         "road accident",
+        "car accident"
     ],
+
     "fall_injury": [
-        "fall",
         "fall injury",
+        "injury from fall",
+        "fell down"
     ],
-    "poisoning": ["poisoning", "poison"],
+
+    "poisoning": [
+        "poisoning",
+        "poison",
+        "poisoned"
+    ],
+
     "died_suddenly": [
         "died suddenly",
-        "sudden death",
+        "sudden death"
     ],
+
     "pregnant_at_death": [
         "pregnant",
-        "pregnancy",
+        "pregnancy"
     ],
+
     "excessive_bleeding_delivery": [
         "excessive bleeding",
         "bleeding during delivery",
-        "postpartum bleeding",
+        "postpartum bleeding"
     ],
 }
 
@@ -137,69 +161,103 @@ def detect_intent(question):
 
     q = question.lower().strip()
 
-    # Prediction questions
-    prediction_words = [
+
+    # ----------------------------------------------
+    # Dataset questions FIRST
+    # ----------------------------------------------
+
+    if any(word in q for word in [
+        "how many",
+        "number of",
+        "count"
+    ]):
+        return "COUNT"
+
+
+    if any(word in q for word in [
+        "percentage",
+        "percent",
+        "%",
+        "proportion"
+    ]):
+        return "PERCENTAGE"
+
+
+    if any(word in q for word in [
+        "most common",
+        "most frequent",
+        "commonest"
+    ]):
+        return "MOST_COMMON"
+
+
+    if any(word in q for word in [
+        "distribution",
+        "breakdown",
+        "frequency",
+        "frequencies"
+    ]):
+        return "DISTRIBUTION"
+
+
+    # ----------------------------------------------
+    # Explicit prediction questions
+    # ----------------------------------------------
+
+    if any(word in q for word in [
         "predict",
         "prediction",
         "likely cause",
         "possible cause",
-        "cause of death",
         "what caused",
-        "what could be",
-    ]
-
-    if any(word in q for word in prediction_words):
+        "what could be the cause",
+        "what is the cause"
+    ]):
         return "PREDICTION"
 
-    # Count questions
-    count_words = [
-        "how many",
-        "number of",
-        "count",
-        "how much",
-    ]
 
-    if any(word in q for word in count_words):
-        return "COUNT"
+    # ----------------------------------------------
+    # Patient/symptom statement
+    # ----------------------------------------------
 
-    # Percentage questions
-    percentage_words = [
-        "percentage",
-        "percent",
-        "%",
-        "proportion",
-    ]
+    symptom_found = False
 
-    if any(word in q for word in percentage_words):
-        return "PERCENTAGE"
+    for aliases in COLUMN_ALIASES.values():
 
-    # Most common questions
-    common_words = [
-        "most common",
-        "most frequent",
-        "highest",
-        "commonest",
-    ]
+        for alias in aliases:
 
-    if any(word in q for word in common_words):
-        return "MOST_COMMON"
+            if alias in q:
+                symptom_found = True
+                break
 
-    # Distribution questions
-    distribution_words = [
-        "distribution",
-        "breakdown",
-        "frequency",
-        "frequencies",
-    ]
+        if symptom_found:
+            break
 
-    if any(word in q for word in distribution_words):
-        return "DISTRIBUTION"
+
+    # If symptoms are mentioned, treat as prediction
+    if symptom_found:
+
+        patient_indicators = [
+            "patient",
+            "person",
+            "he had",
+            "she had",
+            "they had",
+            "suffering",
+            "symptoms",
+            "has",
+            "had"
+        ]
+
+        if any(indicator in q for indicator in patient_indicators):
+            return "PREDICTION"
+
 
     return "UNKNOWN"
 
 
 # ==================================================
-# EXTRACT COLUMN / SYMPTOM
+# EXTRACT COLUMNS
 # ==================================================
 
 def extract_columns(question):
@@ -212,7 +270,11 @@ def extract_columns(question):
 
         for alias in aliases:
 
-            if alias in q:
+            # Word/phrase matching
+            if re.search(
+                r"\b" + re.escape(alias) + r"\b",
+                q
+            ):
                 found_columns.append(column)
                 break
 
@@ -220,23 +282,23 @@ def extract_columns(question):
 
 
 # ==================================================
-# EXTRACT YES / NO VALUES
+# EXTRACT YES / NO
 # ==================================================
 
 def extract_value(question):
 
     q = question.lower()
 
-    negative_words = [
+    negative_patterns = [
         "without",
         "didn't have",
         "did not have",
         "no ",
         "not have",
-        "absent",
+        "absent"
     ]
 
-    if any(word in q for word in negative_words):
+    if any(pattern in q for pattern in negative_patterns):
         return "no"
 
     return "yes"
@@ -258,7 +320,7 @@ def analyze_question(question):
         "question": question,
         "intent": intent,
         "columns": columns,
-        "value": value,
+        "value": value
     }
 
 
@@ -269,21 +331,35 @@ def analyze_question(question):
 if __name__ == "__main__":
 
     questions = [
+
         "How many people had fever?",
+
         "What percentage of people had cough?",
+
         "What is the most common cause of death?",
-        "Show the frequency of vomiting.",
-        "The patient had fever and cough. What is the likely cause?",
-        "How many people did not have fever?",
+
+        "What is the distribution of causes of death?",
+
+        "The patient had fever, cough and difficulty breathing.",
+
+        "The patient had severe headache and convulsions.",
+
+        "The patient had fever but no cough.",
+
+        "A patient has chest pain.",
+
+        "What is the likely cause of fever and cough?"
     ]
+
 
     for question in questions:
 
-        result = analyze_question(question)
+        print("\n" + "=" * 60)
 
-        print("\nQuestion:")
+        print("QUESTION:")
         print(question)
 
-        print("Analysis:")
-        print(result)
+        print("\nANALYSIS:")
+
+        print(analyze_question(question))
 

@@ -1,4 +1,4 @@
-
+import re
 # ==================================================
 # SYMPTOM EXTRACTOR
 # Converts natural language into structured symptoms
@@ -202,6 +202,68 @@ def is_negated(text, position):
             return True
 
     return False
+
+
+
+# ==================================================
+# AGE GROUP EXTRACTION
+# ==================================================
+
+
+
+def extract_age_group(text):
+
+    text = text.lower()
+
+    # ----------------------------------------------
+    # Explicit age
+    # ----------------------------------------------
+
+    patterns = [
+        r"(\d+)\s*(?:years?|yrs?)\s*old",
+        r"age\s*(?:was|is)?\s*(\d+)",
+        r"(\d+)\s*year"
+    ]
+
+    for pattern in patterns:
+
+        match = re.search(pattern, text)
+
+        if match:
+
+            age = int(match.group(1))
+
+            if age < 1:
+                return "neonate"
+
+            elif age < 18:
+                return "child"
+
+            else:
+                return "adult"
+
+
+    # ----------------------------------------------
+    # Age-group words
+    # ----------------------------------------------
+
+    if "neonate" in text or "newborn" in text:
+        return "neonate"
+
+    if "child" in text or "kid" in text:
+        return "child"
+
+    if "adult" in text:
+        return "adult"
+
+    # ----------------------------------------------
+    # Age not provided
+    # ----------------------------------------------
+
+    return None
+
+
+
 
 
 # ==================================================
