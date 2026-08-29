@@ -110,7 +110,7 @@ def handle_prediction(question):
 
     age_group = extract_age_group(question)
     if age_group is None:
-      return "Please provide the patient's age or age group."
+        return "Please provide the patient's age or age group."
 
     symptoms["age_group"] = age_group
 
@@ -156,6 +156,7 @@ def handle_prediction(question):
     response = (
         f"Detected symptoms: "
         f"{', '.join(detected_symptoms)}\n\n"
+        f"age group:{age_group}\n\n"
     )
 
     response += (
@@ -256,7 +257,8 @@ if __name__ == "__main__":
 
         "The patient had fever but no cough.",
 
-        "what is the most common disease?"
+        "what is the most common disease?",
+       " A 15 year old patient had fever, cough and difficulty breathing."
     ]
 
 
