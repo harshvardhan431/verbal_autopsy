@@ -217,40 +217,15 @@ def detect_intent(question):
 
 
     # ----------------------------------------------
-    # Patient/symptom statement
+    # Any recognised symptom → treat as prediction
     # ----------------------------------------------
-
-    symptom_found = False
 
     for aliases in COLUMN_ALIASES.values():
 
         for alias in aliases:
 
             if alias in q:
-                symptom_found = True
-                break
-
-        if symptom_found:
-            break
-
-
-    # If symptoms are mentioned, treat as prediction
-    if symptom_found:
-
-        patient_indicators = [
-            "patient",
-            "person",
-            "he had",
-            "she had",
-            "they had",
-            "suffering",
-            "symptoms",
-            "has",
-            "had"
-        ]
-
-        if any(indicator in q for indicator in patient_indicators):
-            return "PREDICTION"
+                return "PREDICTION"
 
 
     return "UNKNOWN"

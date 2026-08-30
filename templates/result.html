@@ -1,81 +1,60 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verbal Autopsy - Result</title>
-
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
-
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
+
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='indian_flag.png') }}" alt="Indian Flag" />
+                <div class="logo-text">
+                    <span class="logo-title">Government of India</span>
+                    <span class="logo-sub">Ministry of Health &amp; Family Welfare</span>
+                </div>
+            </div>
+            <nav>
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('text_analysis') }}">Text Analysis</a>
+                <a href="{{ url_for('image_analysis') }}">Image Analysis</a>
+            </nav>
+        </div>
+    </header>
 
     <div class="container">
 
         <h1>Verbal Autopsy Result</h1>
 
         <!-- USER QUESTION -->
-
         <div class="card">
-
             <h2>Patient Information</h2>
-
-            <p>
-                {{ question }}
-            </p>
-
+            <p>{{ question }}</p>
         </div>
-
 
         <!-- MODEL RESULT -->
-
         <div class="card">
-
             <h2>Analysis</h2>
-
             <pre>{{ result }}</pre>
-
         </div>
-
 
         <!-- MEDICAL DISCLAIMER -->
-
         <div class="warning">
-
             <strong>Important:</strong>
-
-            This system provides a machine-learning
-            prediction for decision support only.
-            It is not a medical diagnosis.
-
+            This system provides a machine-learning prediction
+            for decision support only. It is not a medical diagnosis.
         </div>
 
-
         <!-- ACTIONS -->
-
         <div class="actions">
-
-            <a href="{{ url_for('text_analysis') }}">
-                Analyze Another Case
-            </a>
-
-            <a href="{{ url_for('home') }}">
-                Home
-            </a>
-
+            <a href="{{ url_for('text_analysis') }}">Analyze Another Case</a>
+            <a href="{{ url_for('home') }}">Home</a>
         </div>
 
     </div>
 
 </body>
-
 </html>
-```

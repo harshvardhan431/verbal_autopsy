@@ -1,74 +1,94 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Verbal Autopsy Lite</title>
-
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='style.css') }}">
+    <title>Verbal Autopsy Lite - Government of India</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
 
+    <!-- HERO HEADER (Home page only — with Parliament banner) -->
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='indian_flag.png') }}" alt="Indian Flag" />
+                <div class="logo-text">
+                    <span class="logo-title">Government of India</span>
+                    <span class="logo-sub">Ministry of Health &amp; Family Welfare</span>
+                </div>
+            </div>
+            <nav>
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('text_analysis') }}">Text Analysis</a>
+                <a href="{{ url_for('image_analysis') }}">Image Analysis</a>
+            </nav>
+        </div>
+        <!-- Parliament Banner (Home page only) -->
+        <div class="parliament-banner">
+            <div class="parliament-icon">
+                <!-- SVG: simplified Indian Parliament dome silhouette -->
+                <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" fill="#fff" width="120" height="60">
+                    <!-- Base -->
+                    <rect x="20" y="70" width="160" height="10" rx="2"/>
+                    <!-- Columns -->
+                    <rect x="30" y="40" width="8" height="30"/>
+                    <rect x="50" y="40" width="8" height="30"/>
+                    <rect x="70" y="40" width="8" height="30"/>
+                    <rect x="90" y="40" width="8" height="30"/>
+                    <rect x="110" y="40" width="8" height="30"/>
+                    <rect x="130" y="40" width="8" height="30"/>
+                    <rect x="150" y="40" width="8" height="30"/>
+                    <!-- Top beam -->
+                    <rect x="25" y="35" width="140" height="6" rx="2"/>
+                    <!-- Dome -->
+                    <ellipse cx="95" cy="35" rx="40" ry="20"/>
+                    <!-- Spire -->
+                    <rect x="93" y="10" width="4" height="10"/>
+                    <circle cx="95" cy="8" r="4"/>
+                </svg>
+            </div>
+            <div class="parliament-text">
+                <span class="parliament-title">Verbal Autopsy Lite</span>
+                <span class="parliament-sub">AI-Assisted Verbal Autopsy Analysis System</span>
+            </div>
+        </div>
+    </header>
+
     <div class="container">
-
-        <h1>Verbal Autopsy Lite</h1>
-
-        <p class="subtitle">
-            AI-assisted verbal autopsy analysis system
-        </p>
 
         <div class="options">
 
             <div class="card">
-
                 <h2>Text Analysis</h2>
-
                 <p>
                     Describe the patient's symptoms and
                     receive a predicted cause of death.
                 </p>
-
                 <a href="{{ url_for('text_analysis') }}">
                     Analyze Text
                 </a>
-
             </div>
 
-
             <div class="card">
-
                 <h2>Image Analysis</h2>
-
                 <p>
                     Upload an image for image-based analysis.
                 </p>
-
                 <a href="{{ url_for('image_analysis') }}">
                     Analyze Image
                 </a>
-
             </div>
 
         </div>
 
-
         <div class="warning">
-
             <strong>Disclaimer:</strong>
-
             This system provides machine-learning predictions
             for decision support only. It is not a medical diagnosis.
-
         </div>
 
     </div>
 
 </body>
-
 </html>
-```

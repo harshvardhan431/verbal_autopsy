@@ -1,17 +1,49 @@
-<form method="POST">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Analysis - Verbal Autopsy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
 
-    <textarea
-        name="question"
-        placeholder="Describe the patient's symptoms..."
-    ></textarea>
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">
+                <img src="{{ url_for('static', filename='indian_flag.png') }}" alt="Indian Flag" />
+                <div class="logo-text">
+                    <span class="logo-title">Government of India</span>
+                    <span class="logo-sub">Ministry of Health &amp; Family Welfare</span>
+                </div>
+            </div>
+            <nav>
+                <a href="{{ url_for('home') }}">Home</a>
+                <a href="{{ url_for('text_analysis') }}">Text Analysis</a>
+                <a href="{{ url_for('image_analysis') }}">Image Analysis</a>
+            </nav>
+        </div>
+    </header>
 
-    <button type="submit">
-        Analyze
-    </button>
+    <div class="container">
+        <h1>Text Analysis</h1>
+        <p class="subtitle">Enter patient symptoms to predict cause of death</p>
 
-</form>
+        {% if error %}
+        <div class="warning">
+            <strong>Error:</strong> {{ error }}
+        </div>
+        {% endif %}
 
-{% if result %}
-    <h3>Result</h3>
-    <pre>{{ result }}</pre>
-{% endif %}
+        <form method="POST" class="analysis-form">
+            <textarea
+                name="question"
+                placeholder="Describe the patient's symptoms, age, and condition…"
+                rows="6"
+            ></textarea>
+            <button type="submit">Analyze</button>
+        </form>
+    </div>
+
+</body>
+</html>
