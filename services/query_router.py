@@ -232,8 +232,7 @@ def route_question(question):
 
     return (
         "I couldn't understand your question. "
-        "Ask about the dataset or describe "
-        "the patient's symptoms."
+        "Please upload an image to get more information."
     )
 
 

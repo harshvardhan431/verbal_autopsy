@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Analysis - Verbal Autopsy</title>
+    <title>Image Analysis Result - Verbal Autopsy</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -26,19 +26,23 @@
     </header>
 
     <div class="container">
-        <h1>Image Analysis</h1>
-        <p class="subtitle">Upload an image (e.g., a medical report) for AI‑assisted analysis.</p>
+        <h1>Image Analysis Result</h1>
+        <p class="subtitle">Below is the image you uploaded and the AI‑generated analysis.</p>
 
-        {% if error %}
-        <div class="warning">
-            <strong>Error:</strong> {{ error }}
+        <div class="card">
+            <h2>Uploaded Image</h2>
+            <img src="{{ url_for('static', filename=image_path) }}" alt="Uploaded image" style="max-width:100%; height:auto; border:1px solid #ddd;" />
         </div>
-        {% endif %}
 
-        <form method="POST" enctype="multipart/form-data" class="analysis-form">
-            <input type="file" name="image" accept="image/*" required />
-            <button type="submit">Upload &amp; Analyze</button>
-        </form>
+        <div class="card">
+            <h2>Analysis</h2>
+            <p>/* Placeholder for analysis results – integrate your image‑processing model here */</p>
+        </div>
+
+        <div class="actions">
+            <a href="{{ url_for('image_analysis') }}">Analyze Another Image</a>
+            <a href="{{ url_for('home') }}">Home</a>
+        </div>
     </div>
 
 </body>

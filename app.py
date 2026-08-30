@@ -48,8 +48,24 @@ def text_analysis():
 # IMAGE ANALYSIS
 # ==================================================
 
-@app.route("/image")
+@app.route("/image", methods=["GET", "POST"])
 def image_analysis():
+    if request.method == "POST":
+        # Handle uploaded image
+        uploaded_file = request.files.get("image")
+        if uploaded_file and uploaded_file.filename:
+            # Save to static/uploads (ensure directory exists)
+            import os
+            upload_dir = os.path.join(app.root_path, "static", "uploads")
+            os.makedirs(upload_dir, exist_ok=True)
+            save_path = os.path.join(upload_dir, uploaded_file.filename)
+            uploaded_file.save(save_path)
+            # For now, just display the uploaded image and a placeholder result
+            rel_path = f"uploads/{uploaded_file.filename}"
+            return render_template("image_result.html", image_path=rel_path)
+        else:
+            return render_template("image_form.html", error="Please select an image to upload.")
+    # GET request – show upload form
     return render_template("image_form.html")
 
 
