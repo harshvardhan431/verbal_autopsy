@@ -167,6 +167,43 @@ SYMPTOM_ALIASES = {
         "heavy bleeding during delivery",
         "bleeding during delivery",
         "postpartum bleeding"
+    ],
+
+    "animal_attack": [
+        "animal attack",
+        "attacked by an animal",
+        "attacked by animal",
+        "mauled",
+        "wild animal attack",
+        "wild animal",
+        "wildanimal",
+        "animal bite",
+        "tiger attack",
+        "lion attack",
+        "leopard attack",
+        "elephant attack"
+    ],
+
+    "bite_mark": [
+        "bite mark",
+        "bite marks",
+        "bitten",
+        "teeth marks"
+    ],
+
+    "claw_mark": [
+        "claw mark",
+        "claw marks",
+        "scratch marks",
+        "clawed"
+    ],
+
+    "puncture_wound": [
+        "puncture wound",
+        "puncture wounds",
+        "fang marks",
+        "snake bite",
+        "snakebite"
     ]
 }
 
@@ -198,7 +235,7 @@ def is_negated(text, position):
 
     for word in NEGATION_WORDS:
 
-        if word in previous_text:
+        if re.search(r"\b" + re.escape(word) + r"\b", previous_text):
             return True
 
     return False
@@ -263,7 +300,90 @@ def extract_age_group(text):
     return None
 
 
+# ==================================================
+# ATTACK ANIMAL EXTRACTION
+# ==================================================
 
+ANIMAL_KEYWORDS = {
+    "lion": ["lion", "lions", "asiatic lion"],
+    "leopard": ["leopard", "leopards", "panther"],
+    "tiger": ["tiger", "tigers", "bengal tiger"],
+    "elephant": ["elephant", "elephants", "wild elephant"],
+    "snake": ["snake", "snakes", "cobra", "viper", "krait", "snake bite", "snakebite"],
+    "dog": ["dog", "dogs", "stray dog", "rabid dog"],
+    "bear": ["bear", "sloth bear"],
+    "crocodile": ["crocodile", "alligator", "mugger"],
+    "boar": ["wild boar", "boar"],
+    "wolf": ["wolf", "wolves"],
+}
+
+
+def extract_attack_animal(text):
+
+    text = text.lower()
+
+    for animal, keywords in ANIMAL_KEYWORDS.items():
+        for keyword in keywords:
+            if re.search(r"\b" + re.escape(keyword) + r"\b", text):
+                return animal
+
+    if any(k in text for k in ["animal", "mauled", "wild animal", "wildanimal", "wild beast", "carnivore"]):
+        return "other"
+
+    return "none"
+
+
+# ==================================================
+# STATE EXTRACTION
+# ==================================================
+
+STATE_ALIASES = {
+    "Maharashtra": ["maharashtra", "mh"],
+    "Madhya Pradesh": ["madhya pradesh", "mp"],
+    "Karnataka": ["karnataka", "ka"],
+    "West Bengal": ["west bengal", "wb", "bengal"],
+    "Assam": ["assam", "as"],
+    "Uttarakhand": ["uttarakhand", "uk", "uttaranchal"],
+    "Rajasthan": ["rajasthan", "rj"],
+    "Gujarat": ["gujarat", "gj"],
+    "Kerala": ["kerala", "kl"],
+    "Tamil Nadu": ["tamil nadu", "tamilnadu", "tn"],
+    "Uttar Pradesh": ["uttar pradesh", "up"],
+    "Bihar": ["bihar", "br"],
+    "Odisha": ["odisha", "orissa", "od"],
+    "Chhattisgarh": ["chhattisgarh", "cg"],
+    "Jharkhand": ["jharkhand", "jh"],
+    "Andhra Pradesh": ["andhra pradesh", "andhra", "ap"],
+    "Telangana": ["telangana", "ts", "tg"],
+    "Himachal Pradesh": ["himachal pradesh", "himachal", "hp"],
+    "Goa": ["goa", "ga"],
+    "Punjab": ["punjab", "pb"],
+    "Haryana": ["haryana", "hr"],
+    "Jammu And Kashmir": ["jammu and kashmir", "jammu & kashmir", "j&k", "jk", "kashmir"],
+    "Delhi": ["delhi", "new delhi", "nct of delhi", "dl"],
+    "Ladakh": ["ladakh"],
+    "Puducherry": ["puducherry", "pondicherry", "py"],
+    "Arunachal Pradesh": ["arunachal pradesh", "arunachal", "ar"],
+    "Manipur": ["manipur", "mn"],
+    "Meghalaya": ["meghalaya", "ml"],
+    "Mizoram": ["mizoram", "mz"],
+    "Nagaland": ["nagaland", "nl"],
+    "Sikkim": ["sikkim", "sk"],
+    "Tripura": ["tripura", "tr"],
+}
+
+
+def extract_state(text):
+
+    text_lower = text.lower()
+
+    for canonical_state, aliases in STATE_ALIASES.items():
+        for alias in aliases:
+            # Match whole words only to avoid substring matches like 'goa' in 'goat'
+            if re.search(r"\b" + re.escape(alias) + r"\b", text_lower):
+                return canonical_state
+
+    return None
 
 
 # ==================================================
@@ -272,7 +392,7 @@ def extract_age_group(text):
 
 def extract_symptoms(text):
 
-    text = text.lower()
+    text_lower = text.lower()
 
     symptoms = {}
 
@@ -282,11 +402,14 @@ def extract_symptoms(text):
 
         for alias in aliases:
 
-            position = text.find(alias)
+            # Use word boundary search to avoid partial substring matching (e.g. 'rash' in 'maharashtra')
+            match = re.search(r"\b" + re.escape(alias) + r"\b", text_lower)
 
-            if position != -1:
+            if match:
 
-                if is_negated(text, position):
+                position = match.start()
+
+                if is_negated(text_lower, position):
 
                     symptoms[symptom] = "no"
 
@@ -315,7 +438,9 @@ if __name__ == "__main__":
 
         "The patient had vomiting and abdominal pain.",
 
-        "The patient had no fever but had chest pain."
+        "The patient had no fever but had chest pain.",
+
+        "The patient had claw marks and bite marks, mauled by a lion."
     ]
 
 
@@ -336,3 +461,7 @@ if __name__ == "__main__":
 
                print(f"{symptom}: {value}")
 
+        animal = extract_attack_animal(text)
+
+        if animal != "none":
+            print(f"attack_animal: {animal}")

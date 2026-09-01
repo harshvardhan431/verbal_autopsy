@@ -150,6 +150,57 @@ COLUMN_ALIASES = {
         "bleeding during delivery",
         "postpartum bleeding"
     ],
+
+    "animal_attack": [
+        "animal attack",
+        "attacked by an animal",
+        "attacked by animal",
+        "wild animal attack",
+        "wild animal",
+        "wildanimal",
+        "mauled",
+        "animal bite",
+        "animal"
+    ],
+
+    "bite_mark": [
+        "bite mark",
+        "bite marks",
+        "bitten",
+        "teeth marks",
+        "dog bite",
+        "snake bite"
+    ],
+
+    "claw_mark": [
+        "claw mark",
+        "claw marks",
+        "scratch marks",
+        "clawed"
+    ],
+
+    "puncture_wound": [
+        "puncture wound",
+        "puncture wounds",
+        "fang marks",
+        "snake bite"
+    ],
+
+    "attack_animal": [
+        "tiger",
+        "lion",
+        "leopard",
+        "elephant",
+        "snake",
+        "cobra",
+        "viper",
+        "krait",
+        "dog",
+        "bear",
+        "crocodile",
+        "wolf",
+        "boar"
+    ],
 }
 
 

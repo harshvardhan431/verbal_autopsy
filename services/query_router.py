@@ -1,4 +1,3 @@
-
 import os
 import sys
 
@@ -21,8 +20,12 @@ if PROJECT_ROOT not in sys.path:
 from services.question_analyzer import analyze_question
 from services.symptom_extractor import (
     extract_symptoms,
-    extract_age_group
+    extract_age_group,
+    extract_attack_animal,
+    extract_state
 )
+
+from services.insurance_policy import get_policy_info
 
 from services.dataset_query import (
     count_condition,
@@ -116,6 +119,22 @@ def handle_prediction(question):
 
 
     # ----------------------------------------------
+    # Fill in wound/attack fields expected by the model
+    # (defaults if not mentioned in the text)
+    # ----------------------------------------------
+
+    attack_animal = extract_attack_animal(question)
+
+    symptoms["attack_animal"] = attack_animal
+    if symptoms.get("animal_attack") != "yes" and attack_animal != "none":
+        symptoms["animal_attack"] = "yes"
+
+    symptoms.setdefault("wound_location", "none")
+    symptoms.setdefault("body_recovered", "yes")
+    symptoms.setdefault("witness_present", "no")
+
+
+    # ----------------------------------------------
     # Check whether symptoms were found
     # ----------------------------------------------
 
@@ -133,13 +152,6 @@ def handle_prediction(question):
         )
 
 
-    # ----------------------------------------------
-    # Add age group
-    # ----------------------------------------------
-
-    # Temporary default.
-    # We will build proper age extraction later.
-    
     # ----------------------------------------------
     # Predict
     # ----------------------------------------------
@@ -178,6 +190,82 @@ def handle_prediction(question):
         "\nThis is a model prediction for "
         "decision support, not a medical diagnosis."
     )
+
+
+    # ----------------------------------------------
+    # If the predicted cause is an animal attack (or animal attack symptoms present),
+    # look up the state's compensation policy
+    # ----------------------------------------------
+
+    ANIMAL_ATTACK_CAUSES = {
+        "animal_attack", "animal attack",
+        "snake_bite", "snake bite",
+        "lion_attack", "leopard_attack", "tiger_attack",
+        "elephant_attack", "dog_bite", "other_animal_attack",
+    }
+
+    pred_norm = str(prediction).lower().replace(" ", "_").strip()
+
+    is_animal_attack = (
+        pred_norm in ANIMAL_ATTACK_CAUSES
+        or str(prediction).lower() in ANIMAL_ATTACK_CAUSES
+        or symptoms.get("animal_attack") == "yes"
+        or attack_animal != "none"
+        or symptoms.get("puncture_wound") == "yes"
+        or symptoms.get("bite_mark") == "yes"
+        or symptoms.get("claw_mark") == "yes"
+    )
+
+    if is_animal_attack:
+
+        state = extract_state(question)
+
+        # Infer specific animal from prediction if not already extracted
+        effective_animal = attack_animal
+        if effective_animal in ["none", "other", None]:
+            if "snake" in pred_norm:
+                effective_animal = "snake"
+            elif "tiger" in pred_norm:
+                effective_animal = "tiger"
+            elif "lion" in pred_norm:
+                effective_animal = "lion"
+            elif "leopard" in pred_norm:
+                effective_animal = "leopard"
+            elif "elephant" in pred_norm:
+                effective_animal = "elephant"
+            elif "dog" in pred_norm:
+                effective_animal = "dog"
+            else:
+                effective_animal = "other"
+
+        if state is None:
+            response += (
+                "\n\nThis looks like it may be an animal-attack case. "
+                "Please mention the state so I can check the applicable "
+                "wildlife-attack compensation policy."
+            )
+        else:
+            policy = get_policy_info(state, effective_animal)
+
+            response += f"\n\nWildlife-attack compensation ({policy['state'] if policy.get('state') else state}):\n"
+
+            if policy["found"]:
+                response += (
+                    f"- Scheme: {policy['scheme_name']}\n"
+                    f"- Department: {policy['department']}\n"
+                    f"- Compensation ({effective_animal}): {policy['compensation']}\n"
+                    f"- Notes: {policy['notes']}\n"
+                )
+                if policy["source_url"]:
+                    response += f"- Source: {policy['source_url']}\n"
+            else:
+                response += f"- {policy['notes']}\n"
+
+            response += (
+                "\nThis is reference information only, not a confirmation "
+                "of eligibility. The claim must still be verified by the "
+                "forest department / relevant authority."
+            )
 
     return response
 
@@ -232,7 +320,8 @@ def route_question(question):
 
     return (
         "I couldn't understand your question. "
-        "Please upload an image to get more information."
+        "Ask about the dataset or describe "
+        "the patient's symptoms."
     )
 
 
